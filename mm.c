@@ -20,11 +20,13 @@ typedef struct header {
 } BlockHeader;
 
 /* Macros to handle the free flag at bit 0 of the next pointer of header pointed at by p */
-#define GET_NEXT(p)    (void *) (p->next)    /* TODO: Mask out free flag */
-#define SET_NEXT(p,n)  p->next = (void *) n  /* TODO: Preserve free flag */
+#define GET_NEXT(p)    (void *) ((uintptr_t) (p->next) & ~0x1)   /* TODO: Mask out free flag */
+#define SET_NEXT(p,n)  p->next = (void *)(((uintptr_t) n & ~0x1) | ((uintptr_t) p->next & 0x1)) /* TODO: Preserve free flag */
 #define GET_FREE(p)    (uint8_t) ( (uintptr_t) (p->next) & 0x1 )   /* OK -- do not change */
-#define SET_FREE(p,f)  /* TODO: Set free bit of p->next to f */
-#define SIZE(p)        (size_t) ( 0 ) /* TODO: Caluculate size of block from p and p->next */ 
+#define SET_FREE(p,f)  p->next = (void *) ( (uintptr_t) (p->next) & ~0x1 | (uintptr_t) f ) /* TODO: Set free bit of p->next to f */
+#define IS_LAST(p)    (GET_NEXT(p) == p)  /* Check if p is the last/dummy block thar is 0*/
+#define SIZE(p)       (size_t) (IS_LAST(p) ? 0 : (uintptr_t) GET_NEXT(p) - (uintptr_t) p - sizeof(BlockHeader))
+/* TODO: Caluculate size of block from p and p->next */
 
 #define MIN_SIZE     (8)   // A block should have at least 8 bytes available for the user
 
@@ -38,15 +40,19 @@ static BlockHeader * current = NULL;
  *
  */
 void simple_init() {
-  uintptr_t aligned_memory_start = memory_start;  /* TODO: Alignment */
-  uintptr_t aligned_memory_end   = memory_end;    /* TODO: Alignment */
+    /* TODO: Alignment */
+  size_t alignment = 8;
+  uintptr_t aligned_memory_start = memory_start; /* Align to 8 bytes */
+  uintptr_t aligned_memory_end   = memory_end; /* TODO: Alignment */
   BlockHeader * last;
 
-  /* Already initalized ? */
+  /* Already initialized ? */
   if (first == NULL) {
-    /* Check that we have room for at least one free block and an end header */
-    if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
-      /* TODO: Place first and last blocks and set links and free flags properly */
+    /* Check that we have room for at least one free block and an end header*/
+        if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
+        /* Initialize first block */
+      //TODO: Place first and last blocks and set links and free flags properly
+
     }
     current = first;     
   } 

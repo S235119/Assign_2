@@ -131,6 +131,7 @@ END_TEST
  * 
  */
 START_TEST (test_memory_exerciser)
+
 {
   uint32_t iterations = 1000;                     /* Alter as required */
 
