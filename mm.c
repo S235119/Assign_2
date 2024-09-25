@@ -20,13 +20,25 @@ typedef struct header {
 } BlockHeader;
 
 /* Macros to handle the free flag at bit 0 of the next pointer of header pointed at by p */
+//we hide fri flag
 #define GET_NEXT(p)    (void *) ((uintptr_t) (p->next) & ~0x1)   /* TODO: Mask out free flag */
+
+//it means that p will point to n and n will keep the free flag unchanged
+//if p->next is free, then n will be also free
 #define SET_NEXT(p,n)  p->next = (void *)(((uintptr_t) n & ~0x1) | ((uintptr_t) p->next & 0x1)) /* TODO: Preserve free flag */
+
+//will return 1, indicating that the block is free
 #define GET_FREE(p)    (uint8_t) ( (uintptr_t) (p->next) & 0x1 )   /* OK -- do not change */
-#define SET_FREE(p,f)  p->next = (void *) ( (uintptr_t) (p->next) & ~0x1 | (uintptr_t) f ) /* TODO: Set free bit of p->next to f */
-#define IS_LAST(p)    (GET_NEXT(p) == p)  /* Check if p is the last/dummy block thar is 0*/
-#define SIZE(p)       (size_t) (IS_LAST(p) ? 0 : (uintptr_t) GET_NEXT(p) - (uintptr_t) p - sizeof(BlockHeader))
-/* TODO: Caluculate size of block from p and p->next */
+
+//Here we set the flag of the block to be free 1 or allocated 0
+//f is the flag(should be 1 or 0). We do (f & ~0x1) to ensure that only the least bit of f is used when setting flag
+//(p->next) & ~0x1 - we mask out the free bit of p->next to get the address/the same format no matter block is free or not
+#define SET_FREE(p,f)  p->next = (void *) ( ((uintptr_t) (p->next) & ~0x1)|(uintptr_t)(f) & ~0x1) /* TODO: Set free bit of p->next to f */
+
+
+//We find the size of the user data block by subtracting the address of the next block from the address of the current block
+// and subtracting the size of the header.
+#define SIZE(p)       (size_t) ((uintptr_t) GET_NEXT(p) - (uintptr_t) p - sizeof(BlockHeader)) /* TODO: Caluculate size of block from p and p->next */
 
 #define MIN_SIZE     (8)   // A block should have at least 8 bytes available for the user
 
@@ -104,6 +116,7 @@ void* simple_malloc(size_t size) {
 
  /* None found */
   return NULL;
+
 }
 
 
