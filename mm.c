@@ -60,12 +60,17 @@ void simple_init() {
   BlockHeader * last;
 
   /* Already initialized ? */
+  /* Already initialized ? */
   if (first == NULL) {
     /* Check that we have room for at least one free block and an end header*/
         if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
         /* Initialize first block */
       //TODO: Place first and last blocks and set links and free flags properly
-
+        first = aligned_memory_start;
+        last = aligned_memory_end;
+        SET_FREE(first,1);
+        SET_NEXT(last,0);
+        SET_FREE(last, NULL);
     }
     current = first;     
   } 
