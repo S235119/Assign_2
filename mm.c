@@ -53,6 +53,8 @@ static BlockHeader * current = NULL;
  */
 void simple_init() {
   size_t alignment = 8;
+  // We add alignment-1 (7 = 0111) to our start and end addresses to ensure that they will be able to be 8 byte aligned
+  // We then use the and operation, to compare them with the negation of 7 (1000 = 8) and find the 8 byte aligned address they need
   uintptr_t aligned_memory_start = (memory_start + (alignment-1)) & ~(alignment - 1);  /* TODO: Alignment */
   uintptr_t aligned_memory_end   = (memory_end + (alignment-1)) & ~(alignment - 1); /* TODO: Alignment */
   BlockHeader * last;
