@@ -66,8 +66,8 @@ void simple_init() {
         if (aligned_memory_start + 2*sizeof(BlockHeader) + MIN_SIZE <= aligned_memory_end) {
         /* Initialize first block */
       //TODO: Place first and last blocks and set links and free flags properly
-        first = aligned_memory_start;
-        last = aligned_memory_end;
+        first = (BlockHeader *)aligned_memory_start;
+        last = (BlockHeader *)aligned_memory_end;
         SET_FREE(first,1);
         SET_NEXT(last,0);
         SET_FREE(last, NULL);
