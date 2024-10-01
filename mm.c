@@ -52,10 +52,9 @@ static BlockHeader * current = NULL;
  *
  */
 void simple_init() {
-    /* TODO: Alignment */
   size_t alignment = 8;
-  uintptr_t aligned_memory_start = memory_start; /* Align to 8 bytes */
-  uintptr_t aligned_memory_end   = memory_end; /* TODO: Alignment */
+  uintptr_t aligned_memory_start = (memory_start + (alignment-1)) & ~(alignment - 1);  /* TODO: Alignment */
+  uintptr_t aligned_memory_end   = (memory_end + (alignment-1)) & ~(alignment - 1); /* TODO: Alignment */
   BlockHeader * last;
 
   /* Already initialized ? */
