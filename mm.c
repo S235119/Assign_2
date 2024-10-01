@@ -94,7 +94,7 @@ void* simple_malloc(size_t size) {
     if (first == NULL) return NULL;
   }
 
-  size_t aligned_size = size;  /* TODO: Alignment */
+  size_t aligned_size = (size + (MIN_SIZE - 1)) & ~(MIN_SIZE - 1);  /* TODO: Alignment */
 
   /* Search for a free block */
   BlockHeader * search_start = current;
