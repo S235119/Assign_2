@@ -109,11 +109,20 @@ void* simple_malloc(size_t size) {
         /* Will the remainder be large enough for a new block? */
         if (SIZE(current) - aligned_size < sizeof(BlockHeader) + MIN_SIZE) {
           /* TODO: Use block as is, marking it non-free*/
+                SET_FREE(current, 0);
         } else {
           /* TODO: Carve aligned_size from block and allocate new free block for the rest */
+          //make a new block that will have the size of aligned_size
+                BlockHeader *new_block = (BlockHeader *) ((char *)current + sizeof(BlockHeader))+aligned_size;
+                // new block point to the next from curent
+                SET_NEXT(new_block, GET_NEXT(current));
+                SET_FREE(new_block, 1);
+                // current gets change to point to new_block
+                SET_NEXT(current, new_block);
+                SET_FREE(current, 0);
         }
         
-        return (void *) NULL; /* TODO: Return address of current's user_block and advance current */
+        return (void *) current -> user_block; /* TODO: Return address of current's user_block and advance current */
       }
     }
 
@@ -143,8 +152,8 @@ void simple_free(void * ptr) {
   }
 
   /* TODO: Free block */
+    SET_FREE(block, 1);
 
   /* Possibly coalesce consecutive free blocks here */
 }
-
 
