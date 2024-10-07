@@ -145,7 +145,8 @@ void* simple_malloc(size_t size) {
  *
  */
 void simple_free(void * ptr) {
-  BlockHeader * block = NULL; /* TODO: Find block corresponding to ptr */
+    // 
+  BlockHeader * block = ptr - sizeof(BlockHeader); /* TODO: Find block corresponding to ptr */
   if (GET_FREE(block)) {
     /* Block is not in use -- probably an error */
     return;
